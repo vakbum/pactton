@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>팍특송 - PAC1TON Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:#F5F6FA;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+button:active{opacity:.85}
+input{font-family:'Noto Sans KR',sans-serif}
+input:focus{outline:none;border-color:rgba(74,144,217,.5)!important}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.page{display:none}.page.active{display:block}
+
+/* ── App ── */
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#F5F6FA;position:relative}
+.header{background:linear-gradient(135deg,#1B2A4A,#2C4170);padding:0 16px;position:sticky;top:0;z-index:100}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo-area{display:flex;align-items:center;gap:10px}
+.logo-text{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.2}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:1.5px}
+.login-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:500}
+
+.sec{padding:16px}
+.sec-title{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:10px}
+
+.balance{background:linear-gradient(135deg,#1B2A4A,#2C4170);border-radius:16px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 4px 18px rgba(27,42,74,.22)}
+.balance-label{color:rgba(255,255,255,.6);font-size:12px;margin-bottom:3px}
+.balance-amount{color:#fff;font-size:26px;font-weight:800}
+.balance-won{font-size:14px;font-weight:400;opacity:.7}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#fff;border-radius:14px;padding:15px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.card-t{font-size:13px;font-weight:700;color:#1B2A4A;margin-bottom:2px}
+.card-s{font-size:11px;color:#8892A6}
+
+.n-list{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.04)}
+.n-item{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F0F1F5;gap:12px}
+.n-item:last-child{border-bottom:none}
+.n-text{font-size:13px;color:#333;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.n-date{font-size:11px;color:#AAB0BD;flex-shrink:0}
+
+.price-toggle{width:100%;padding:14px 18px;background:#fff;border:1px solid rgba(0,0,0,.04);border-radius:14px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;color:#1B2A4A;box-shadow:0 1px 5px rgba(0,0,0,.04)}
+.price-content{margin-top:12px;animation:fadeInUp .3s ease-out}
+.price-sub{font-size:13px;font-weight:700;color:#1B2A4A;margin-bottom:6px;padding-left:2px;margin-top:18px}
+.price-sub:first-child{margin-top:0}
+.tbl{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06)}
+.tbl-head{display:flex;background:#1B2A4A;padding:9px 14px}
+.tbl-head div{font-size:12px;font-weight:600;color:#fff}
+.tbl-row{display:flex;padding:9px 14px;border-bottom:1px solid #F0F1F5;align-items:flex-start}
+.tbl-row:nth-child(even){background:#FAFBFF}
+.tbl-row:last-child{border-bottom:none}
+.td-l{width:90px;flex-shrink:0;font-size:13px;font-weight:700;color:#2C4170}
+.td-r{flex:1;font-size:12px;color:#555;line-height:1.5}
+
+.footer{background:#1B2A4A;padding:22px 20px 18px;margin-top:8px}
+.f-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.f-logo{font-size:17px;font-weight:800;color:#fff}
+.f-link{background:none;border:none;color:rgba(255,255,255,.6);font-size:11px;padding:0}
+.f-div{color:rgba(255,255,255,.25);font-size:11px;margin:0 4px}
+.f-row{display:flex;gap:10px;margin-bottom:5px;font-size:11px;color:rgba(255,255,255,.5)}
+.f-label{font-weight:600;color:rgba(255,255,255,.35);width:100px;flex-shrink:0}
+.f-copy{font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:14px}
+
+/* ── Overlay / Modals ── */
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-box{background:#fff;border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:70vh;overflow:auto}
+.modal-title{font-size:17px;font-weight:700;color:#1B2A4A;margin-bottom:14px}
+.modal-body{font-size:13px;color:#555;line-height:1.7;margin-bottom:18px}
+.modal-close{width:100%;padding:12px;background:#1B2A4A;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600}
+.login-modal{background:#fff;border-radius:20px;padding:28px 22px;max-width:310px;width:100%;text-align:center}
+.login-modal h3{font-size:17px;font-weight:700;color:#1B2A4A;margin:0 0 6px}
+.login-modal p{font-size:13px;color:#888;margin-bottom:22px}
+.modal-btns{display:flex;gap:10px}
+.btn-cancel{flex:1;padding:12px;background:#F0F1F5;color:#666;border:none;border-radius:10px;font-size:14px;font-weight:600}
+.btn-confirm{flex:1;padding:12px;background:#1B2A4A;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600}
+
+/* ── Login Page ── */
+.login-page{max-width:480px;margin:0 auto;background:#111820;min-height:100vh;display:flex;flex-direction:column}
+.lp-header{display:flex;align-items:center;justify-content:space-between;padding:0 6px;height:52px;border-bottom:1px solid rgba(255,255,255,.08)}
+.lp-header button{background:none;border:none;color:rgba(255,255,255,.65);font-size:22px;padding:8px 12px}
+.lp-header span{font-size:16px;font-weight:600;color:#fff}
+.lp-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.08)}
+.lp-tab{flex:1;padding:13px 0;font-size:14px;font-weight:500;color:rgba(255,255,255,.35);background:none;border:none;border-bottom:2px solid transparent;transition:all .2s}
+.lp-tab.active{color:#fff;border-bottom-color:#4A90D9}
+.lp-logo{display:flex;justify-content:center;padding:32px 0 22px}
+.lp-form{padding:0 24px;flex:1}
+.lp-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:14px;color:#fff;margin-bottom:12px}
+.lp-input::placeholder{color:rgba(255,255,255,.25)}
+.pw-wrap{position:relative}
+.pw-wrap .lp-input{padding-right:48px}
+.eye-btn{position:absolute;right:12px;top:14px;background:none;border:none;font-size:18px;padding:4px}
+.lp-submit{width:100%;padding:15px;background:linear-gradient(135deg,#2C4170,#4A6DB5);border:none;border-radius:12px;font-size:16px;font-weight:700;color:#fff;margin-top:6px;margin-bottom:16px;box-shadow:0 4px 16px rgba(44,65,112,.4)}
+.auto-login{display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:22px}
+.chk{width:22px;height:22px;border-radius:6px;border:1.5px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.chk.on{background:#4A90D9;border-color:#4A90D9}
+.chk span{color:#fff;font-size:12px;font-weight:700}
+.auto-text{font-size:13px;color:rgba(255,255,255,.55)}
+.lp-links{display:flex;justify-content:center;align-items:center;gap:6px;padding-bottom:28px}
+.lp-links button{background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;padding:4px 2px}
+.lp-links .dv{color:rgba(255,255,255,.12);font-size:12px}
+
+/* ── Register ── */
+.reg-form{padding:18px 24px;flex:1;overflow-y:auto}
+.reg-field{margin-bottom:14px}
+.reg-label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:6px}
+.req{color:#E74C3C}
+.reg-footer{text-align:center;font-size:13px;color:rgba(255,255,255,.4);padding-bottom:28px}
+.reg-footer button{background:none;border:none;color:#4A90D9;font-size:13px;font-weight:600;text-decoration:underline}
+.arrow-t{transition:transform .3s;display:inline-block}
+.arrow-t.open{transform:rotate(180deg)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ 메인 페이지 ═══════════ -->
+<div id="page-main" class="page active">
+<div class="app">
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <span style="font-size:24px">🚚</span>
+        <div><div class="logo-text">팍특송</div><div class="logo-sub">PAC1TON</div></div>
+      </div>
+      <button class="login-btn" onclick="goPage('login')">로그인</button>
+    </div>
+  </header>
+
+  <section class="sec">
+    <div class="balance" onclick="showLogin()">
+      <div>
+        <p class="balance-label">나의 보유 배송비</p>
+        <p class="balance-amount">0 <span class="balance-won">원</span></p>
+      </div>
+      <span style="color:rgba(255,255,255,.4);font-size:20px">→</span>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="grid">
+      <div class="card" onclick="showLogin()">
+        <div class="card-icon" style="background:#EEF2FF">📋</div>
+        <div><p class="card-t">배송등록</p><p class="card-s">오늘 0건 · 전체 0건</p></div>
+      </div>
+      <div class="card" onclick="showLogin()">
+        <div class="card-icon" style="background:#FFF7ED">🚛</div>
+        <div><p class="card-t">배송현황</p><p class="card-s">배송중 0건</p></div>
+      </div>
+      <div class="card" onclick="showLogin()">
+        <div class="card-icon" style="background:#F0FDF4">✅</div>
+        <div><p class="card-t">배송완료</p><p class="card-s">오늘 0건 · 전체 0건</p></div>
+      </div>
+      <div class="card" onclick="showLogin()">
+        <div class="card-icon" style="background:#FDF2F8">💰</div>
+        <div><p class="card-t">배송비 충전</p><p class="card-s">현재 0원</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h3 class="sec-title">📢 공지사항</h3>
+    <div class="n-list">
+      <div class="n-item"><p class="n-text">📢 팍특송 주말 마감시간 변경 공지합니다.</p><span class="n-date">26.03.07</span></div>
+      <div class="n-item"><p class="n-text">금일 배송안내</p><span class="n-date">26.02.23</span></div>
+      <div class="n-item"><p class="n-text">팍특송 설날연휴 운영시간 참고바랍니다!</p><span class="n-date">26.02.12</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <button class="price-toggle" onclick="togglePrice()">
+      <span>💰 울산 지역 배송비</span>
+      <span id="price-arrow" class="arrow-t">▼</span>
+    </button>
+    <div id="price-content" style="display:none" class="price-content">
+      <p class="price-sub" style="margin-top:0">지역별 배송비</p>
+      <div class="tbl">
+        <div class="tbl-head"><div class="td-l">배송비</div><div class="td-r">배송지역</div></div>
+        <div class="tbl-row"><div class="td-l">10,000원</div><div class="td-r">남구, 중구</div></div>
+        <div class="tbl-row"><div class="td-l">11,000원</div><div class="td-r">동구, 북구</div></div>
+        <div class="tbl-row"><div class="td-l">12,000원</div><div class="td-r">울주군 (범서, 언양, 삼남)</div></div>
+        <div class="tbl-row"><div class="td-l">14,000원</div><div class="td-r">울주군 (온양, 웅촌, 청량)</div></div>
+        <div class="tbl-row"><div class="td-l">16,000원</div><div class="td-r">울주군 외곽 (서생, 온산, 두동, 두서, 상북)</div></div>
+      </div>
+
+      <p class="price-sub">장소별 추가 요금</p>
+      <div class="tbl">
+        <div class="tbl-head"><div class="td-l">추가요금</div><div class="td-r">해당 장소</div></div>
+        <div class="tbl-row"><div class="td-l">3,000원</div><div class="td-r">울산 롯데호텔, 현대호텔</div></div>
+        <div class="tbl-row"><div class="td-l">5,000원</div><div class="td-r">울산컨벤션센터, 울산대공원 내 행사장</div></div>
+      </div>
+
+      <p class="price-sub">기타 추가 요금</p>
+      <div class="tbl">
+        <div class="tbl-head"><div class="td-l">항목</div><div class="td-r">요금</div></div>
+        <div class="tbl-row"><div class="td-l">축하/근조/행사</div><div class="td-r">평일: 추가 시 개당 5,000원 (7개부터 10,000원) | 주말: 지역별 상이</div></div>
+        <div class="tbl-row"><div class="td-l">축하/근조 4단</div><div class="td-r">개당 +3,000원</div></div>
+        <div class="tbl-row"><div class="td-l">영정 바구니</div><div class="td-r">2개부터 5,000원</div></div>
+        <div class="tbl-row"><div class="td-l">축하/근조 5단</div><div class="td-r">개당 지역 배송비 2배</div></div>
+        <div class="tbl-row"><div class="td-l">급살</div><div class="td-r">해당 지역 배송비 2배</div></div>
+        <div class="tbl-row"><div class="td-l">관엽식물</div><div class="td-r">평일/주말: 추가 시 개당 5,000원 (7개부터 10,000원)</div></div>
+        <div class="tbl-row"><div class="td-l">장례용품</div><div class="td-r">추가 시 개당 5,000원 (7개부터 10,000원)</div></div>
+        <div class="tbl-row"><div class="td-l">동·서양란</div><div class="td-r">동양란: 2개부터 개당 3,000원 | 서양란: 2개부터 개당 5,000원</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="f-top">
+      <div class="f-logo">팍특송</div>
+      <div>
+        <button class="f-link" onclick="showModal('terms-modal')">이용약관</button>
+        <span class="f-div">|</span>
+        <button class="f-link" onclick="showModal('privacy-modal')">개인정보처리방침</button>
+      </div>
+    </div>
+    <div>
+      <div class="f-row"><span class="f-label">대표자명</span><span>홍길동</span></div>
+      <div class="f-row"><span class="f-label">주소</span><span>울산광역시 남구 (상세주소 미정)</span></div>
+      <div class="f-row"><span class="f-label">사업자등록번호</span><span>000-00-00000</span></div>
+      <div class="f-row"><span class="f-label">고객센터</span><span>010-0000-0000 / 24시간</span></div>
+      <div class="f-row"><span class="f-label">Email</span><span>pac1ton@naver.com</span></div>
+    </div>
+    <p class="f-copy">Copyright ⓒ 팍특송, All rights reserved.</p>
+  </footer>
+</div>
+</div>
+
+<!-- ═══════════ 로그인 페이지 ═══════════ -->
+<div id="page-login" class="page">
+<div class="login-page">
+  <div class="lp-header">
+    <button onclick="goPage('main')">‹</button>
+    <span>로그인</span>
+    <button onclick="goPage('main')">⌂</button>
+  </div>
+  <div class="lp-tabs">
+    <button id="tab-driver" class="lp-tab active" onclick="switchTab('driver')">배송기사</button>
+    <button id="tab-owner" class="lp-tab" onclick="switchTab('owner')">화원사장님</button>
+  </div>
+  <div class="lp-logo">
+    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+      <path d="M16 18L36 36L16 54" stroke="#4A90D9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M32 18L52 36L32 54" stroke="#7BC67E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="lp-form">
+    <input class="lp-input" type="text" placeholder="아이디">
+    <div class="pw-wrap">
+      <input id="pw-input" class="lp-input" type="password" placeholder="비밀번호">
+      <button class="eye-btn" onclick="togglePw()">👁</button>
+    </div>
+    <button class="lp-submit" id="login-submit-btn">배송기사로그인</button>
+    <div class="auto-login" onclick="toggleAuto()">
+      <div id="auto-chk" class="chk on"><span>✓</span></div>
+      <span class="auto-text">자동 로그인</span>
+    </div>
+    <div class="lp-links">
+      <button>아이디 찾기</button>
+      <span class="dv">|</span>
+      <button>비밀번호 찾기</button>
+      <span class="dv">|</span>
+      <button onclick="goRegister()"><span id="register-link-text">배송기사</span> 회원가입</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ 회원가입 페이지 (배송기사) ═══════════ -->
+<div id="page-register-driver" class="page">
+<div class="login-page">
+  <div class="lp-header">
+    <button onclick="goPage('login')">‹</button>
+    <span>배송기사 회원가입</span>
+    <button onclick="goPage('main')">⌂</button>
+  </div>
+  <div class="reg-form">
+    <div class="reg-field"><label class="reg-label">이름 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="실명을 입력하세요"></div>
+    <div class="reg-field"><label class="reg-label">아이디 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="영문/숫자 조합 4~20자"></div>
+    <div class="reg-field"><label class="reg-label">비밀번호 <span class="req">*</span></label><input class="lp-input" type="password" placeholder="영문/숫자/특수문자 8자 이상"></div>
+    <div class="reg-field"><label class="reg-label">비밀번호 확인 <span class="req">*</span></label><input class="lp-input" type="password" placeholder="비밀번호를 다시 입력하세요"></div>
+    <div class="reg-field"><label class="reg-label">휴대폰번호 <span class="req">*</span></label><input class="lp-input" type="tel" placeholder="'-' 없이 입력 (01012345678)"></div>
+    <div class="reg-field"><label class="reg-label">차량 종류 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="예: 오토바이, 다마스, 1톤"></div>
+    <div class="reg-field"><label class="reg-label">주소 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="기본 주소를 입력하세요"></div>
+    <div style="margin:8px 0 20px">
+      <div class="auto-login" onclick="toggleRegAgree('driver')">
+        <div id="reg-agree-driver" class="chk"><span></span></div>
+        <span style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.4">이용약관 및 개인정보처리방침에 동의합니다.</span>
+      </div>
+    </div>
+    <button class="lp-submit">배송기사 가입하기</button>
+    <p class="reg-footer">이미 계정이 있으신가요? <button onclick="goPage('login')">로그인</button></p>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ 회원가입 페이지 (화원사장님) ═══════════ -->
+<div id="page-register-owner" class="page">
+<div class="login-page">
+  <div class="lp-header">
+    <button onclick="goPage('login')">‹</button>
+    <span>화원사장님 회원가입</span>
+    <button onclick="goPage('main')">⌂</button>
+  </div>
+  <div class="reg-form">
+    <div class="reg-field"><label class="reg-label">이름 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="실명을 입력하세요"></div>
+    <div class="reg-field"><label class="reg-label">아이디 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="영문/숫자 조합 4~20자"></div>
+    <div class="reg-field"><label class="reg-label">비밀번호 <span class="req">*</span></label><input class="lp-input" type="password" placeholder="영문/숫자/특수문자 8자 이상"></div>
+    <div class="reg-field"><label class="reg-label">비밀번호 확인 <span class="req">*</span></label><input class="lp-input" type="password" placeholder="비밀번호를 다시 입력하세요"></div>
+    <div class="reg-field"><label class="reg-label">휴대폰번호 <span class="req">*</span></label><input class="lp-input" type="tel" placeholder="'-' 없이 입력 (01012345678)"></div>
+    <div class="reg-field"><label class="reg-label">화원명 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="화원 이름을 입력하세요"></div>
+    <div class="reg-field"><label class="reg-label">사업자등록번호 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="'-' 없이 입력"></div>
+    <div class="reg-field"><label class="reg-label">주소 <span class="req">*</span></label><input class="lp-input" type="text" placeholder="기본 주소를 입력하세요"></div>
+    <div style="margin:8px 0 20px">
+      <div class="auto-login" onclick="toggleRegAgree('owner')">
+        <div id="reg-agree-owner" class="chk"><span></span></div>
+        <span style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.4">이용약관 및 개인정보처리방침에 동의합니다.</span>
+      </div>
+    </div>
+    <button class="lp-submit">화원사장님 가입하기</button>
+    <p class="reg-footer">이미 계정이 있으신가요? <button onclick="goPage('login')">로그인</button></p>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ 모달들 ═══════════ -->
+<div id="login-need-modal" class="overlay" style="display:none" onclick="hideModal('login-need-modal')">
+  <div class="login-modal" onclick="event.stopPropagation()">
+    <div style="font-size:36px;margin-bottom:10px">🔒</div>
+    <h3>로그인 안내</h3>
+    <p>로그인 후 이용 가능합니다.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideModal('login-need-modal')">취소</button>
+      <button class="btn-confirm" onclick="hideModal('login-need-modal');goPage('login')">로그인</button>
+    </div>
+  </div>
+</div>
+
+<div id="terms-modal" class="overlay" style="display:none" onclick="hideModal('terms-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3 class="modal-title">서비스 이용약관</h3>
+    <div class="modal-body">
+      <p>제 1 조 (목적) 이 이용약관은 "팍특송"에서 제공하는 인터넷 서비스의 가입조건, 이용자의 권리, 의무, 책임사항과 기타 필요한 사항을 규정합니다.</p>
+      <br><p>※ 전체 이용약관은 추후 업데이트 예정입니다.</p>
+    </div>
+    <button class="modal-close" onclick="hideModal('terms-modal')">확인</button>
+  </div>
+</div>
+
+<div id="privacy-modal" class="overlay" style="display:none" onclick="hideModal('privacy-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3 class="modal-title">개인정보처리방침</h3>
+    <div class="modal-body">
+      <p>팍특송(이하 "회사")는 개인정보보호법 등 관련 법령을 준수하며, 이용자의 권익보호에 최선을 다합니다.</p>
+      <br><p>수집항목: 이름, 아이디, 비밀번호, 휴대폰번호, 주소</p>
+      <br><p>※ 전체 개인정보처리방침은 추후 업데이트 예정입니다.</p>
+    </div>
+    <button class="modal-close" onclick="hideModal('privacy-modal')">확인</button>
+  </div>
+</div>
+
+<script>
+let currentTab = 'driver';
+let autoLoginOn = true;
+let regAgreed = { driver: false, owner: false };
+
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (page === 'register') {
+    document.getElementById('page-register-' + currentTab).classList.add('active');
+  } else {
+    document.getElementById('page-' + page).classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+function showLogin() {
+  document.getElementById('login-need-modal').style.display = 'flex';
+}
+
+function showModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+
+function hideModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function togglePrice() {
+  const el = document.getElementById('price-content');
+  const arrow = document.getElementById('price-arrow');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    arrow.classList.add('open');
+  } else {
+    el.style.display = 'none';
+    arrow.classList.remove('open');
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-driver').classList.toggle('active', tab === 'driver');
+  document.getElementById('tab-owner').classList.toggle('active', tab === 'owner');
+  const label = tab === 'driver' ? '배송기사' : '화원사장님';
+  document.getElementById('login-submit-btn').textContent = label + '로그인';
+  document.getElementById('register-link-text').textContent = label;
+}
+
+function togglePw() {
+  const inp = document.getElementById('pw-input');
+  const btn = inp.nextElementSibling;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function toggleAuto() {
+  autoLoginOn = !autoLoginOn;
+  const el = document.getElementById('auto-chk');
+  el.classList.toggle('on', autoLoginOn);
+  el.innerHTML = autoLoginOn ? '<span>✓</span>' : '';
+}
+
+function goRegister() {
+  goPage('register');
+}
+
+function toggleRegAgree(type) {
+  regAgreed[type] = !regAgreed[type];
+  const el = document.getElementById('reg-agree-' + type);
+  el.classList.toggle('on', regAgreed[type]);
+  el.innerHTML = regAgreed[type] ? '<span>✓</span>' : '';
+}
+</script>
+
+</body>
+</html>
